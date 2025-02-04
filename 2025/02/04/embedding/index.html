@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="阿泰">
+
+
+
+
+
+<title>embedding | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Ding&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Ding&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">embedding</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">阿泰</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 4, 2025&nbsp;&nbsp;14:44:53</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/">大模型基础</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="什么是embedding"><a href="#什么是embedding" class="headerlink" title="什么是embedding"></a>什么是embedding</h2><p>embedding 是”一个集合到另一个集合的单射同构”。</p>
+<ol>
+<li>保证不同的输入会得到不同的输出（单射特性）</li>
+<li>保持原始数据之间的关系不变（同构特性）</li>
+</ol>
+<p>就像地图将现实世界的多维地理信息（地形、温度、人口等）通过颜色和等高线映射到二维平面一样，Embedding也是将复杂数据映射到更简单的空间中表示。</p>
+<p>在自然语言处理中，Embedding可以将离散的单词转换为连续的向量，使得语义相近的词在向量空间中距离更近，进行”国王-男人+女人&#x3D;王后”这样的向量运算。</p>
+<h2 id="为什么需要-One-hot-编码"><a href="#为什么需要-One-hot-编码" class="headerlink" title="为什么需要 One-hot 编码"></a>为什么需要 One-hot 编码</h2><ol>
+<li><strong>处理离散特征的数值问题</strong></li>
+</ol>
+<p>​		机器学习算法基于向量空间进行计算，而离散特征（如颜色：红、绿、蓝）无法直接用于计算，需要将其转换为数值形式。如果直接用数字编码（如红&#x3D;1，绿&#x3D;2，蓝&#x3D;3），会错误地暗示特征之间存在大小关系。</p>
+<ol start="2">
+<li><strong>创建欧式空间的映射</strong></li>
+</ol>
+<p>​		One-hot 将离散特征扩展到欧式空间，每个特征值对应空间中的一个点，所有特征点之间的距离都是相等的。红[1,0,0]到绿[0,1,0]的距离等于红[1,0,0]到蓝[0,0,1]的距离，这种表示方式更符合特征的本质。</p>
+<ol start="3">
+<li><strong>特征表示的统一性</strong></li>
+</ol>
+<p>​		One-hot 编码后的特征都是0和1，相当于自动完成了归一化，使所有离散特征都转换为统一的向量形式，便于机器学习模型的处理和计算，同时保证了特征之间的公平性。</p>
+<h3 id="One-hot编码的优缺点"><a href="#One-hot编码的优缺点" class="headerlink" title="One-hot编码的优缺点"></a>One-hot编码的优缺点</h3><p>​		独热编码解决了分类器不好处理属性数据的问题。比如在处理”颜色”这样的属性时，它的值只有0和1，不同类型存储在垂直的空间中，这样”红色”和”蓝色”就不会因为数字编码而产生大小关系，保证了特征处理的公平性。</p>
+<p>​		然而，当类别的数量很多时（比如处理全国所有城市名称），特征空间会变得非常大。在这种情况下，一般可以使用PCA来降低维度。例如，一个有1000个可能取值的类别特征，经过One-hot编码后会变成1000维，通过PCA可以将其降至较低的维度（如100维）同时保留主要信息。这种One-hot encoding + PCA的组合在实践中也非常常见。</p>
+<h2 id="Word2Vec-模型：CBOW-和-Skip-gram"><a href="#Word2Vec-模型：CBOW-和-Skip-gram" class="headerlink" title="Word2Vec 模型：CBOW 和 Skip-gram"></a>Word2Vec 模型：CBOW 和 Skip-gram</h2><ul>
+<li><strong>参考文章</strong>：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/61635013">一文详解 Word2vec 之 Skip-Gram 模型（实现篇）</a></li>
+</ul>
+<p>Word2Vec 是一种流行的词嵌入模型，主要有两种架构：<strong>CBOW</strong>（Continuous Bag of Words）和 <strong>Skip-gram</strong>。</p>
+<p>以句子”There is an apple on the table”为例：</p>
+<h3 id="CBOW（Continuous-Bag-of-Words）"><a href="#CBOW（Continuous-Bag-of-Words）" class="headerlink" title="CBOW（Continuous Bag of Words）"></a>CBOW（Continuous Bag of Words）</h3><ul>
+<li>使用上下文词预测中心词</li>
+<li>输入：(is,an,on,the)</li>
+<li>输出：预测”apple”</li>
+<li>适合数据集较小的情况</li>
+</ul>
+<h3 id="Skip-gram"><a href="#Skip-gram" class="headerlink" title="Skip-gram"></a>Skip-gram</h3><ul>
+<li>使用中心词预测上下文词</li>
+<li>输入：apple</li>
+<li>输出：预测(is,an,on,the)</li>
+<li>在大型语料中表现更好</li>
+</ul>
+<img src="https://picx.zhimg.com/v2-0d3bbbe2ab92b36d40ff0acb9170f311_1440w.jpg" alt="img" style="zoom:67%;" />
+
+<h3 id="CBOW-模型训练过程"><a href="#CBOW-模型训练过程" class="headerlink" title="CBOW 模型训练过程"></a>CBOW 模型训练过程</h3><p>CBOW 模型的具体训练步骤如下：</p>
+<p><img src="https://picx.zhimg.com/v2-8fcd03fa3dad0cf4d0af1a890ace5193_1440w.jpg" alt="img"></p>
+<ol>
+<li><p><strong>输入层处理</strong>：<br>将上下文词转换为One-Hot编码词向量。以上文为例，C&#x3D;4（上下文窗口大小），模型输入为 (is,an,on,the) 四个单词的One-Hot编码向量。</p>
+</li>
+<li><p><strong>权重初始化</strong>：<br>初始化权重矩阵 $W_{V×N}$，将输入的One-Hot编码词向量与该矩阵相乘得到维数为N的向量 $w_1,w_2,…,w_c$。这里的N是根据需求设置的隐藏层维度。</p>
+</li>
+<li><p><strong>隐藏层计算</strong>：<br>将得到的向量 $w_1,w_2,…,w_c$ 求平均，作为隐藏层向量h。</p>
+</li>
+<li><p><strong>输出层计算</strong>：<br>初始化另一个权重矩阵 $W’<em>{N×V}$，将隐藏层向量h与 $W’</em>{N×V}$ 相乘，再经过softmax处理得到V维向量y。y的每个元素表示相应单词为预测词的概率分布。</p>
+</li>
+<li><p><strong>误差计算与更新</strong>：<br>将y中概率最大的元素所指示的单词（预测出的中心词）与真实标签的One-Hot编码向量比较，计算误差（根据误差更新两个权重矩阵）。</p>
+</li>
+</ol>
+<h3 id="Word-Embedding-的获取"><a href="#Word-Embedding-的获取" class="headerlink" title="Word Embedding 的获取"></a>Word Embedding 的获取</h3><p>在训练前需要定义好损失函数（一般为交叉熵损失函数），采用梯度下降算法更新W和W’。训练完成后，输入层的每个单词与矩阵W相乘得到的向量就是我们想要的Distributed Representation表示的词向量，也就是word embedding。</p>
+<p>由于One-Hot编码词向量中只有一个元素为1，其他都为0，所以每个词向量乘以矩阵W得到的就是矩阵的第i行，所以这个矩阵也叫做 look up table。有了look up table就可以免去训练过程，直接查表得到单词的词向量。</p>
+<h2 id="Hierarchical-Softmax-优化"><a href="#Hierarchical-Softmax-优化" class="headerlink" title="Hierarchical Softmax 优化"></a>Hierarchical Softmax 优化</h2><ul>
+<li><strong>参考视频</strong>：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ab411p7k7/">Hierarchical Softmax &amp; Negative Sampling, 层序softmax&amp;负采样</a></li>
+</ul>
+<p>用哈夫曼树替代了原先从隐藏层到输出层的权重矩阵 $W’$。</p>
+<img src="C:\Users\丁启泰\AppData\Roaming\Typora\typora-user-images\image-20250204155452228.png" alt="image-20250204155452228" style="zoom:67%;" />
+
+<h2 id="Negative-Sampling-优化"><a href="#Negative-Sampling-优化" class="headerlink" title="Negative Sampling 优化"></a>Negative Sampling 优化</h2><p>Negative Sampling 提供了另一种提升 Word2Vec 效率的方法，特别适合处理不常见词汇。</p>
+<p>传统神经网络训练时，每个样本都需要更新所有权重。而 Negative Sampling 只更新部分权重，显著降低计算复杂度。</p>
+<p><img src="C:\Users\丁启泰\AppData\Roaming\Typora\typora-user-images\image-20250204155552117.png" alt="image-20250204155552117"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>阿泰</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/embedding/"># embedding</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/02/04/hashtable/">hot100-哈希表</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 阿泰 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
