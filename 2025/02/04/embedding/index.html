@@ -317,12 +317,10 @@
 <h2 id="Hierarchical-Softmax-优化"><a href="#Hierarchical-Softmax-优化" class="headerlink" title="Hierarchical Softmax 优化"></a>Hierarchical Softmax 优化</h2><ul>
 <li><strong>参考视频</strong>：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ab411p7k7/">Hierarchical Softmax &amp; Negative Sampling, 层序softmax&amp;负采样</a></li>
 </ul>
-<p>用哈夫曼树替代了原先从隐藏层到输出层的权重矩阵 $W’$。</p>
-<img src="C:\Users\丁启泰\AppData\Roaming\Typora\typora-user-images\image-20250204155452228.png" alt="image-20250204155452228" style="zoom:67%;" />
-
+<p>用哈夫曼树替代了原先从隐藏层到输出层的权重矩阵 $W’$。<br><img src="/images/embedding/hierarchical-softmax.png" alt="Hierarchical Softmax"></p>
 <h2 id="Negative-Sampling-优化"><a href="#Negative-Sampling-优化" class="headerlink" title="Negative Sampling 优化"></a>Negative Sampling 优化</h2><p>Negative Sampling 提供了另一种提升 Word2Vec 效率的方法，特别适合处理不常见词汇。</p>
 <p>传统神经网络训练时，每个样本都需要更新所有权重。而 Negative Sampling 只更新部分权重，显著降低计算复杂度。</p>
-<p><img src="C:\Users\丁启泰\AppData\Roaming\Typora\typora-user-images\image-20250204155552117.png" alt="image-20250204155552117"></p>
+<p><img src="/images/embedding/negative-sampling.png" alt="Negative Sampling"></p>
 
         </div>
 
