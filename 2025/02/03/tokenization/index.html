@@ -258,11 +258,8 @@
         </header>
 
         <div class="post-content">
-            <h2 id="Tokenization"><a href="#Tokenization" class="headerlink" title="Tokenization"></a>Tokenization</h2><h3 id="什么是分词"><a href="#什么是分词" class="headerlink" title="什么是分词"></a>什么是分词</h3><p><strong>目的</strong>：分词的目的是将输入文本分成一个个词元，保证各个词元拥有相对完整和独立的语义，一共后续任务（比如embedding或者作为高级模型的输入）使用。</p>
-<p><strong>分词的三种粒度：</strong></p>
-<p>分词是自然语言处理（NLP）和大模型处理文本的关键步骤，直接影响模型对语义的理解能力。常见的分词粒度分为以下三种，每种都有其特点和适用场景：</p>
-<hr>
-<h4 id="1-词粒度（Word-level-Tokenization）"><a href="#1-词粒度（Word-level-Tokenization）" class="headerlink" title="1. 词粒度（Word-level Tokenization）"></a>1. <strong>词粒度（Word-level Tokenization）</strong></h4><ul>
+            <h2 id="Tokenization"><a href="#Tokenization" class="headerlink" title="Tokenization"></a>Tokenization</h2><h3 id="什么是分词"><a href="#什么是分词" class="headerlink" title="什么是分词"></a>什么是分词</h3><p><strong>目的</strong>：分词的目的是将输入文本分成一个个词元，保证各个词元拥有相对完整和独立的语义，供后续任务（比如embedding或者作为高级模型的输入）使用。</p>
+<h3 id="分词的三种粒度："><a href="#分词的三种粒度：" class="headerlink" title="分词的三种粒度："></a><strong>分词的三种粒度：</strong></h3><h4 id="1-词粒度（Word-level-Tokenization）"><a href="#1-词粒度（Word-level-Tokenization）" class="headerlink" title="1. 词粒度（Word-level Tokenization）"></a>1. <strong>词粒度（Word-level Tokenization）</strong></h4><ul>
 <li><strong>原理</strong>：将文本按自然语言的词汇切分，例如英文按空格分隔单词，中文则需要依赖分词工具（如jieba分词）。<ul>
 <li><strong>英文示例</strong>：<code>&quot;I love NLP&quot;</code> → <code>[&quot;I&quot;, &quot;love&quot;, &quot;NLP&quot;]</code></li>
 <li><strong>中文示例</strong>：<code>&quot;自然语言处理&quot;</code> → <code>[&quot;自然&quot;, &quot;语言&quot;, &quot;处理&quot;]</code></li>
@@ -273,11 +270,12 @@
 </ul>
 </li>
 <li><strong>缺点</strong>：<ul>
-<li>无法处理未登录词（Out-of-Vocabulary, OOV），例如新词或拼写错误（如 <code>&quot;NLPxx&quot;</code>，<code>&quot;栓Q&quot;</code>）。</li>
+<li>无法处理OOV（Out-of-Vocabulary）问题，例如新词或拼写错误（如 <code>&quot;beatiful&quot;</code>，<code>&quot;栓Q&quot;</code>）。</li>
 <li>中文分词依赖工具，可能因分词工具不同导致结果差异（如 <code>&quot;机器学习&quot;</code> 是否拆分为 <code>[&quot;机器&quot;, &quot;学习&quot;]</code>）。</li>
 <li>词粒度的词表<strong>长尾效应可能会非常大</strong>，包含很多稀有词存储和训练的成本都比较高，并且稀有词往往很难学好。（如专业术语 <code>&quot;脱氧核糖核酸&quot;</code> 或生僻词 <code>&quot;耄耋&quot;</code>）</li>
-<li>无法处理单词的形态和词缀关系，同一个词的不同形态，语义详尽，完全当成不同的词增加了训练成本，而且无法很好的捕捉这些词的关系，同时也无法学习词缀在不同单词之间的泛化。<ul>
-<li>例：英文中 <code>&quot;run&quot;</code>（跑）、<code>&quot;ran&quot;</code>（过去式）、<code>&quot;running&quot;</code>（进行时）被当作独立词，无法共享语义；词缀泛化能力差（如 <code>&quot;anti-virus&quot;</code> 和 <code>&quot;anti-war&quot;</code> 中的 <code>&quot;anti-&quot;</code> 无法关联）。</li>
+<li>无法处理单词的形态和词缀关系。<ul>
+<li>英文中 <code>&quot;run&quot;</code>（跑）、<code>&quot;ran&quot;</code>（过去式）、<code>&quot;running&quot;</code>（进行时）被当作独立词，无法共享语义</li>
+<li>词缀泛化能力差（如 <code>&quot;anti-virus&quot;</code> 和 <code>&quot;anti-war&quot;</code> 中的 <code>&quot;anti-&quot;</code> 无法关联）。</li>
 </ul>
 </li>
 </ul>
@@ -286,7 +284,7 @@
 </ul>
 <hr>
 <h4 id="2-子词粒度（Subword-level-Tokenization）"><a href="#2-子词粒度（Subword-level-Tokenization）" class="headerlink" title="2. 子词粒度（Subword-level Tokenization）"></a>2. <strong>子词粒度（Subword-level Tokenization）</strong></h4><ul>
-<li><strong>原理</strong>：将单词拆分为更小的语义单元（子词），平衡词粒度和字符粒度的优缺点。常用词保持原装，生僻词拆分成字词共享token压缩空间。</li>
+<li><strong>原理</strong>：常用词保持原装，生僻词拆分成subword共享token压缩空间。</li>
 <li><strong>优点</strong>：<ul>
 <li>平衡词表大小和语义表达能力</li>
 </ul>
@@ -328,8 +326,7 @@
 </li>
 </ul>
 <hr>
-<h3 id="经典分词算法"><a href="#经典分词算法" class="headerlink" title="经典分词算法"></a>经典分词算法</h3><hr>
-<h4 id="1-BPE（Byte-Pair-Encoding）"><a href="#1-BPE（Byte-Pair-Encoding）" class="headerlink" title="1. BPE（Byte Pair Encoding）"></a>1. BPE（Byte Pair Encoding）</h4><ul>
+<h3 id="经典分词算法"><a href="#经典分词算法" class="headerlink" title="经典分词算法"></a>经典分词算法</h3><h4 id="1-BPE（Byte-Pair-Encoding）"><a href="#1-BPE（Byte-Pair-Encoding）" class="headerlink" title="1. BPE（Byte Pair Encoding）"></a>1. BPE（Byte Pair Encoding）</h4><ul>
 <li><p><strong>思想</strong>：先把文本中的所有单词拆成最小的单位（通常是字符或Unicode字节），然后逐步**“合并”**最频繁出现的token对来产生新的token，最终获得一个指定大小的词汇表（Vocabulary）。</p>
 </li>
 <li><p><strong>优点：</strong></p>
@@ -504,6 +501,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2025/02/04/hashtable/">hashtable</a>
             
             
             <a class="next" rel="next" href="/2025/01/05/2025%20%E7%AC%AC%E4%B8%80%E5%AD%A3%E5%BA%A6%E5%81%9A%E8%A6%81%E7%9A%84%E4%BA%8B/">第一季度</a>
