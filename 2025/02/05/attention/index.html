@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="阿泰">
+
+
+
+
+
+<title>Attention | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Ding&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Ding&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Attention</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">阿泰</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">二月 5, 2025&nbsp;&nbsp;21:35:59</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/">大模型基础</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="什么是Attention？"><a href="#什么是Attention？" class="headerlink" title="什么是Attention？"></a>什么是Attention？</h2><p>当我们处理一个包含多个信息的序列（比如一段话、一串数字等）时，传统的神经网络（比如RNN或者CNN）通常会尝试均匀地处理所有部分。但有时候并不是序列中的每个部分都是同等重要的。Attention机制 就是让模型<strong>自动找到并专注于输入序列中最重要的部分</strong>，而忽略掉那些不重要的部分。<br>这段话的核心思想是关于 <strong>Attention机制</strong> 的一个关键点：在处理序列数据（例如文本或时间序列）时，模型需要专注于序列中的重要部分，而不仅仅是对每个部分都做一样的处理。</p>
+<p>想象在做数学题，题目如下：</p>
+<blockquote>
+<p><strong>“小明有5颗苹果，小红有7颗苹果，两个人合起来一共有多少颗苹果？”</strong></p>
+</blockquote>
+<p>在这道题目中，最重要的信息是”小明有5颗苹果”和”小红有7颗苹果”。但如果是一个学生，读题时很可能不会去关注”合起来”这个词，因为它没有提供直接的数值信息。你会集中注意力去解答最关键的部分。注意力机制就是通过这种方式”引导”模型，重点关注对最终解答至关重要的信息。</p>
+<p>总结来说，<strong>Attention机制</strong> 就是帮助模型有选择地”注意”信息中的重点，而不是平等地看待所有信息。这使得模型更加高效，尤其在处理长序列时表现尤为突出。</p>
+<h3 id="Attention机制计算公式"><a href="#Attention机制计算公式" class="headerlink" title="Attention机制计算公式"></a>Attention机制计算公式</h3><p>$$<br>\text{Attention}(Q, K, V) &#x3D; \text{softmax}\left( \frac{Q K^T}{\sqrt{d_k}} \right) V<br>$$</p>
+<h3 id="为什么使用scale？"><a href="#为什么使用scale？" class="headerlink" title="为什么使用scale？"></a>为什么使用scale？</h3><p>在计算注意力分数时，$Q \cdot K^T$ 是计算查询向量和键向量的点积。对于高维向量，点积的数值可能会变得非常大。当点积数值过大时，Softmax的计算会使得注意力分数更加极端，导致大部分权重集中在某个位置，而忽略了其他位置的重要信息。这会导致训练不稳定，特别是在模型训练的初期。</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">SelfAttention</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, hidden_dim: <span class="built_in">int</span> = <span class="number">728</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(SelfAttention, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.hidden_dim = hidden_dim</span><br><span class="line">        <span class="comment"># 创建三个线性层，分别用于生成Q、K、V</span></span><br><span class="line">        <span class="variable language_">self</span>.query = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        <span class="variable language_">self</span>.key = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        <span class="variable language_">self</span>.value = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="comment"># 生成Q、K、V</span></span><br><span class="line">        Q = <span class="variable language_">self</span>.query(x)</span><br><span class="line">        K = <span class="variable language_">self</span>.key(x)</span><br><span class="line">        V = <span class="variable language_">self</span>.value(x)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算注意力分数和权重</span></span><br><span class="line">        attention_scores = torch.matmul(Q, K.transpose(-<span class="number">2</span>, -<span class="number">1</span>))</span><br><span class="line">        attention_scores = attention_scores / math.sqrt(<span class="variable language_">self</span>.hidden_dim)</span><br><span class="line">        attention_weights = F.softmax(attention_scores, dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算输出</span></span><br><span class="line">        output = torch.matmul(attention_weights, V)</span><br><span class="line">        <span class="keyword">return</span> output</span><br></pre></td></tr></table></figure>
+
+<h2 id="实际应用示例"><a href="#实际应用示例" class="headerlink" title="实际应用示例"></a>实际应用示例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建测试数据：3个样本，每个样本2个词，每个词4维</span></span><br><span class="line">X = torch.rand(<span class="number">3</span>, <span class="number">2</span>, <span class="number">4</span>)  <span class="comment"># (batch_size=3, seq_len=2, hidden_dim=4)</span></span><br><span class="line">self_att_net = SelfAttention(hidden_dim=<span class="number">4</span>)</span><br><span class="line">output = self_att_net(X)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>batch_size&#x3D;3：处理3个序列</li>
+<li>seq_len&#x3D;2：每个序列包含2个元素</li>
+<li>hidden_dim&#x3D;4：每个元素用4维向量表示</li>
+</ul>
+<h2 id="什么是多头注意力机制（Multi-Head-Attention）？"><a href="#什么是多头注意力机制（Multi-Head-Attention）？" class="headerlink" title="什么是多头注意力机制（Multi-Head Attention）？"></a>什么是多头注意力机制（Multi-Head Attention）？</h2><p>多头注意力机制是在单个注意力机制的基础上的扩展。它的核心思想是<strong>同时使用多个注意力头</strong>，每个头都可以关注输入信息的不同方面，从而捕获更丰富的特征信息。</p>
+<p>想象你在看一部电影：</p>
+<ul>
+<li>第一个注意力头可能在关注人物的表情</li>
+<li>第二个注意力头可能在关注人物的动作</li>
+<li>第三个注意力头可能在关注场景的光线</li>
+<li>第四个注意力头可能在关注背景音乐</li>
+</ul>
+<p>通过这种方式，多头注意力机制能够从不同的角度理解输入信息，最后将这些不同视角的信息组合起来，得到更全面的理解。</p>
+<h3 id="多头注意力机制的计算公式"><a href="#多头注意力机制的计算公式" class="headerlink" title="多头注意力机制的计算公式"></a>多头注意力机制的计算公式</h3><p>多头注意力的计算可以表示为：</p>
+<p>$$<br>\text{MultiHead}(Q, K, V) &#x3D; \text{Concat}(\text{head}_1, …, \text{head}_h)W^O<br>$$</p>
+<p>其中每个头的计算为：</p>
+<p>$$<br>\text{head}_i &#x3D; \text{Attention}(QW^Q_i, KW^K_i, VW^V_i)<br>$$</p>
+<h3 id="代码实现-1"><a href="#代码实现-1" class="headerlink" title="代码实现"></a>代码实现</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MultiHeadAttention</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, hidden_dim: <span class="built_in">int</span> = <span class="number">728</span>, num_heads: <span class="built_in">int</span> = <span class="number">8</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(MultiHeadAttention, <span class="variable language_">self</span>).__init__()</span><br><span class="line">        <span class="variable language_">self</span>.hidden_dim = hidden_dim</span><br><span class="line">        <span class="variable language_">self</span>.num_heads = num_heads</span><br><span class="line">        <span class="variable language_">self</span>.head_dim = hidden_dim // num_heads</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 确保hidden_dim可以被num_heads整除</span></span><br><span class="line">        <span class="keyword">assert</span> <span class="variable language_">self</span>.head_dim * num_heads == hidden_dim, <span class="string">&quot;hidden_dim必须能被num_heads整除&quot;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 创建Q、K、V的线性变换层</span></span><br><span class="line">        <span class="variable language_">self</span>.q_linear = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        <span class="variable language_">self</span>.k_linear = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        <span class="variable language_">self</span>.v_linear = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 输出的线性变换层</span></span><br><span class="line">        <span class="variable language_">self</span>.out_linear = nn.Linear(hidden_dim, hidden_dim)</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        batch_size = x.size(<span class="number">0</span>)</span><br><span class="line">        seq_length = x.size(<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 生成Q、K、V</span></span><br><span class="line">        Q = <span class="variable language_">self</span>.q_linear(x)</span><br><span class="line">        K = <span class="variable language_">self</span>.k_linear(x)</span><br><span class="line">        V = <span class="variable language_">self</span>.v_linear(x)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 将Q、K、V分割成多个头</span></span><br><span class="line">        Q = Q.view(batch_size, seq_length, <span class="variable language_">self</span>.num_heads, <span class="variable language_">self</span>.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        K = K.view(batch_size, seq_length, <span class="variable language_">self</span>.num_heads, <span class="variable language_">self</span>.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        V = V.view(batch_size, seq_length, <span class="variable language_">self</span>.num_heads, <span class="variable language_">self</span>.head_dim).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 计算注意力分数</span></span><br><span class="line">        attention_scores = torch.matmul(Q, K.transpose(-<span class="number">2</span>, -<span class="number">1</span>))</span><br><span class="line">        attention_scores = attention_scores / math.sqrt(<span class="variable language_">self</span>.head_dim)</span><br><span class="line">        attention_weights = F.softmax(attention_scores, dim=-<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 计算输出</span></span><br><span class="line">        output = torch.matmul(attention_weights, V)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 重组多头的输出</span></span><br><span class="line">        output = output.transpose(<span class="number">1</span>, <span class="number">2</span>).contiguous()</span><br><span class="line">        output = output.view(batch_size, seq_length, <span class="variable language_">self</span>.hidden_dim)</span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 最后的线性变换</span></span><br><span class="line">        output = <span class="variable language_">self</span>.out_linear(output)</span><br><span class="line">        <span class="keyword">return</span> output</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实际应用示例</span></span><br><span class="line"><span class="comment"># 创建测试数据：2个样本，每个样本3个词，每个词维度为8</span></span><br><span class="line">X = torch.rand(<span class="number">2</span>, <span class="number">3</span>, <span class="number">8</span>)  <span class="comment"># (batch_size=2, seq_len=3, hidden_dim=8)</span></span><br><span class="line">multi_head_att = MultiHeadAttention(hidden_dim=<span class="number">8</span>, num_heads=<span class="number">2</span>)</span><br><span class="line">output = multi_head_att(X)</span><br></pre></td></tr></table></figure>
+
+<p>在这个实现中：</p>
+<ul>
+<li>hidden_dim&#x3D;8：每个词用8维向量表示</li>
+<li>num_heads&#x3D;2：使用2个注意力头</li>
+<li>每个头的维度是 head_dim &#x3D; hidden_dim &#x2F; num_heads &#x3D; 4</li>
+</ul>
+<p>多头注意力机制相比单头注意力机制的优势：</p>
+<ol>
+<li>能够同时关注不同的特征模式</li>
+<li>增加了模型的表达能力</li>
+<li>允许模型在不同的表示子空间学习信息</li>
+<li>有助于模型捕获更丰富的上下文关系</li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>阿泰</span>
+                    </p>
+                
+                
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2025/02/05/%E5%B7%A6%E5%8F%B3%E6%8C%87%E9%92%88/">hot100-双指针</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© 阿泰 | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
